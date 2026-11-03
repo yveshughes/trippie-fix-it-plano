@@ -1,0 +1,235 @@
+.hackathon-content {
+  max-width: 1500px;
+  margin: auto;
+  padding: 26px 36px 32px;
+}
+.hackathon-heading {
+  margin-bottom: 22px;
+}
+.hackathon-heading h1 {
+  font-size: 25px;
+  letter-spacing: -0.8px;
+}
+.hackathon-heading > p {
+  font-size: 11px;
+  color: #8a987b;
+  margin-top: 8px;
+}
+.hackathon-intro,
+.hackathon-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.brief-block {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 20px 22px;
+  min-width: 0;
+}
+.brief-block h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.brief-block p,
+.brief-block li {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #6e7e61;
+}
+.brief-block p + p {
+  margin-top: 10px;
+}
+.brief-block strong {
+  font-weight: 600;
+  color: #46603a;
+}
+.brief-block a {
+  color: #6c874f;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.brief-block ul {
+  margin: 11px 0 0;
+  padding-left: 17px;
+}
+.brief-block ul li {
+  padding-left: 2px;
+  margin-bottom: 7px;
+}
+.brief-block ul li:last-child {
+  margin: 0;
+}
+.hackathon-process {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 18px;
+  margin: 18px 0;
+  align-items: start;
+}
+.brief-block .brief-muted {
+  color: #96a187;
+  font-size: 10px;
+  margin-top: -5px;
+}
+.process-steps ol {
+  list-style: none;
+  margin: 19px 0 0;
+  padding: 0;
+}
+.process-steps ol > li {
+  display: flex;
+  gap: 13px;
+  padding: 16px 0;
+  border-top: 1px solid #edf0e6;
+}
+.process-steps ol > li:first-child {
+  padding-top: 0;
+  border: 0;
+}
+.process-steps ol > li:last-child {
+  padding-bottom: 0;
+}
+.step-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #ecf2e0;
+  border: 1px solid #dfe8cf;
+  border-radius: 6px;
+  color: #728c53;
+  width: 25px;
+  height: 26px;
+  font-size: 11px;
+}
+.process-steps h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #405a34;
+}
+.process-steps .step-tech {
+  font-size: 10px;
+  color: #869d6b;
+  margin: 3px 0 7px;
+  font-weight: 500;
+}
+.process-steps .step-output {
+  font-size: 10px;
+  margin-top: 6px;
+  color: #8b987b;
+}
+.process-steps small {
+  display: block;
+  font-size: 9px;
+  color: #9a957c;
+  margin-top: 5px;
+}
+.process-diagram {
+  position: sticky;
+  top: 18px;
+}
+.mermaid-panel {
+  margin-top: 17px;
+}
+.rendered-mermaid {
+  background: #f8faf4;
+  border-radius: 7px;
+  padding: 12px;
+  border: 1px solid #e6eddb;
+  overflow: auto;
+}
+.rendered-mermaid > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 380px;
+  margin: auto;
+}
+.mermaid-panel details {
+  font-size: 9px;
+  color: #8d9f77;
+  margin-top: 12px;
+}
+.mermaid-panel summary {
+  cursor: pointer;
+}
+.mermaid-panel pre {
+  padding: 12px;
+  background: #f3f6ed;
+  border-radius: 5px;
+  font-size: 10px;
+  line-height: 1.7;
+  overflow: auto;
+  color: #6a7e54;
+}
+.brief-block .diagram-note {
+  font-size: 10px;
+  color: #95a181;
+  margin-top: 16px;
+  line-height: 1.9;
+}
+.brief-source {
+  font-size: 9px !important;
+  color: #9ba68b !important;
+}
+.rubric-list strong {
+  display: block;
+}
+.hackathon-status {
+  margin-top: 18px;
+  padding: 16px 20px;
+  background: #eef3e5;
+  border: 1px solid #dde7ce;
+  border-radius: 7px;
+  font-size: 11px;
+  color: #82956d;
+  line-height: 1.9;
+}
+.hackathon-status strong {
+  color: #5c7644;
+}
+.hackathon-nav-link.current {
+  background: #e4edd4;
+  border-color: #d7e2c6;
+  color: #48613a;
+}
+.app-header nav .nav {
+  white-space: nowrap;
+}
+@media (max-width: 900px) {
+  .hackathon-content {
+    padding: 23px;
+  }
+  .hackathon-process {
+    grid-template-columns: 1fr;
+  }
+  .process-diagram {
+    position: static;
+  }
+  .rendered-mermaid > svg {
+    max-height: 850px;
+  }
+  .hackathon-heading h1 {
+    font-size: 22px;
+  }
+}
+@media (max-width: 600px) {
+  .hackathon-intro,
+  .hackathon-bottom {
+    grid-template-columns: 1fr;
+  }
+  .hackathon-content {
+    padding: 18px;
+  }
+  .brief-block {
+    padding: 18px;
+  }
+  .hackathon-heading h1 {
+    font-size: 21px;
+  }
+  .brief-block p,
+  .brief-block li {
+    font-size: 12px;
+  }
+}

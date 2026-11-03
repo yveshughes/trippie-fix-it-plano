@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+
+private/
+
+# Local previews and workstation files
+/preview*.png
+.DS_Store
+.vercel/
+*.log
+# Android build and workstation configuration
+android/.gradle/
+android/local.properties
+android/**/build/

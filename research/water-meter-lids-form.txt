@@ -1,0 +1,65 @@
+Browser tab: 13, Title: "Accela CRM", URL: "https://iframe.publicstuff.com/#?client_id=162#picker-top".
+0 AXWebArea Accela CRM, URL: iframe.publicstuff.com/#?client_id=162%23picker-top
+	1 container
+		2 container
+			47 link  Fix It Plano
+				48 image
+				49 text Fix It Plano
+			3 content list
+				4 button Log In
+				5 button Sign Up
+		6 container
+			50 heading Water Meter Boxes/Lids, Value: 3
+				51 text Water Meter Boxes/Lids
+			52 heading Tell us more about the issue:, Value: 4
+				53 text Tell us more about the issue:
+		54 container
+			55 text Address (required)
+			56 text field (settable)
+			57 text Meter Box Issue
+			58 text (required)
+			59 button Meter Box Issue
+			86 content list
+				87 METER BOX
+					88 text METER BOX
+				89 METER LID
+					90 text METER LID
+			60 text Please inform us if the issue is with your Meter Lid or the actual Meter Box. If you have issues with both the lid and the box, please submit a separate request for each issue. Description (required)
+			61 text entry area (settable) Description: Description, Anything else we should know about the issue?, ID: request-description-input
+			62 container
+				63 text 
+				64 text Add a photo
+				65 button Choose File, ID: file_upload
+			66 button Cancel
+			67 button Submit
+				68 text Submit
+		69 container
+			70 button Keyboard shortcuts
+			71 container Map
+			72 container
+				73 container
+					74 button
+			75 menu bar
+				76 Description: Show street map, Value: 1, ID: B27F6331-2453-4713-B358-2CD3F4BBDDEA
+				77 Description: Show satellite imagery, Value: 0, ID: 6E44CB49-90F9-46EA-872B-8BD6A2384BD7
+			78 checkbox Description: Toggle fullscreen view, Value: 0
+			79 button (collapsed) Description: Map camera controls, Secondary Actions: Expand
+			80 link Description: Open this area in Google Maps (opens a new window), Value: maps.google.com/maps?ll=33.020679,-96.698786&z=11&t=m&hl=en-US&gl=US&mapclient=apiv3
+			81 container
+				82 button Keyboard shortcuts
+				83 text Map data ©2026 Google
+				84 link Description: Terms (opens in new tab), Value: google.com/intl/en-US_US/help/terms_maps.html
+				85 link Description: Report a map error (opens in new tab), Help: Report errors in the road map or imagery to Google, Value: google.com/maps/@33.0206786,-96.6987857,11z/data=!10m1!1e1!12b1?source=apiv3&rapsrc=apiv3
+		37 content list
+			38 link Description:  Powered by Accela, Value: accela.com/
+			39 link Description: 8 iOS, Value: publicstuff.com/iphone/162
+			40 link Description: 7 Android, Value: publicstuff.com/android/162
+			41 link Description:   Call, Value: iframe.publicstuff.com/
+			42 button Embed
+			43 link Description: Select Language​, Value: iframe.publicstuff.com/#
+		44 text entry area (settable)
+
+		45 text entry area (settable)
+		46 image
+
+The focused UI element is 59 button Meter Box Issue

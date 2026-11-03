@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';import {samPrompt,matchesSamPrompt} from './lib/sam-prompt.mjs';
+const report={width:1000,height:1000,sourceSha256:'abc',assessment:{samPoint:{x:.3,y:.4}}};
+const simple=samPrompt(report);assert.deepEqual(simple.region,{left:0,top:0,width:1000,height:1000});
+const override={point:{x:.3,y:.4},positivePoints:[{x:.3,y:.4}],negativePoints:[{x:.35,y:.45}],box:{left:.25,top:.35,right:.4,bottom:.5},cropRegion:{left:200,top:300,width:300,height:300}};
+const c=samPrompt(report,override);assert.equal(c.positives[0].x,100);assert.equal(c.positives[0].y,100);assert.equal(c.negatives[0].x,150);assert.notEqual(c.signature,simple.signature);
+assert(matchesSamPrompt({sourceSha256:'abc',promptSignature:c.signature},report,c));assert(!matchesSamPrompt({sourceSha256:'abc',point:override.point},report,c));
+assert.notEqual(samPrompt(report,{...override,negativePoints:[{x:.36,y:.45}]}).signature,c.signature);
+assert.throws(()=>samPrompt(report,{...override,positivePoints:[]}),/Invalid SAM points/);
+assert.throws(()=>samPrompt(report,{...override,positivePoints:[{x:.9,y:.9}]}),/outside crop/);
+assert.throws(()=>samPrompt(report,{...override,cropRegion:{left:900,top:300,width:300,height:300}}),/Invalid SAM crop/);
+console.log('SAM prompt checks passed: crop mapping, cache signatures, negative changes, zero-positive rejection.');

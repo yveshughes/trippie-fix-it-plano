@@ -1,0 +1,30 @@
+[
+  {
+    "id": "TRP-025",
+    "trippieId": "trippie-02",
+    "title": "Debris beside the trail",
+    "category": "Obstruction",
+    "priority": "Medium",
+    "lat": 33.0463,
+    "lng": -96.8515,
+    "time": "10:45 AM",
+    "image": "/sidewalk.svg",
+    "interpretation": "Confirm whether the material obstructs the accessible route. Identify the trail and nearest access point before reporting.",
+    "status": "Needs review",
+    "sample": true
+  },
+  {
+    "id": "TRP-026",
+    "trippieId": "trippie-03",
+    "title": "Surface joint to inspect",
+    "category": "Sidewalk",
+    "priority": "Low",
+    "lat": 33.0676,
+    "lng": -96.674,
+    "time": "10:47 AM",
+    "image": "/sidewalk.svg",
+    "interpretation": "Inspect the surface joint from another angle. The example image does not establish a measurable height difference.",
+    "status": "Needs review",
+    "sample": true
+  }
+]
