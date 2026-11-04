@@ -95,6 +95,23 @@ export default function HackathonHome() {
                 <li>Plano found <strong>AI road surveys 90% cheaper</strong> than manual inspection. Trippie brings AI inspection to sidewalks and residents’ phones.</li>
               </ul>
             </article>
+            <article className="brief-block">
+              <h2>Why Meta Models</h2>
+              <p>Trippie needs visual reasoning, responsive decisions and affordable inspection at neighborhood scale. These models give us that combination.</p>
+              <h3>Muse Spark Open</h3>
+              <ul>
+                <li><strong>Context for complex missions.</strong> Native image understanding and roughly one million tokens of context provide room for mission instructions, city requirements and supporting evidence in the same reasoning task.</li>
+                <li><strong>Economics that scale.</strong> Fireworks charges $1.25 per million input tokens and $4.25 per million output tokens. At an illustrative 4,000 input and 1,000 output tokens per call, 1,000 calls cost about <strong>$9.25</strong> in Muse Spark Open inference.</li>
+                <li><strong>Speed where it matters.</strong> Trippie uses low reasoning effort for short navigation decisions and medium effort for hazard interpretation—balancing response time, reasoning depth and token spend.</li>
+                <li><strong>Open weights, practical deployment.</strong> Fireworks runs Meta’s model in the cloud, keeping the phone lightweight. Open weights preserve the option to self-host or tailor the model as Trippie grows.</li>
+              </ul>
+              <h3>SAM 3.1</h3>
+              <ul>
+                <li><strong>Evidence people can inspect.</strong> Point-and-box prompts turn a finding into a pixel-level outline, making the affected area clear in the original scene.</li>
+                <li><strong>Quality checked before publishing.</strong> SAM runs through the Meta Model API; Muse Spark Open reviews the overlay against the finding and withholds highlights that do not match.</li>
+              </ul>
+              <p className="model-sources">Model pricing example uses total billed input and output tokens per call; image resolution, reasoning and additional calls affect actual usage. SAM and hosting costs are separate. Sources: <a href="https://fireworks.ai/models/fireworks/muse-spark-open" target="_blank" rel="noreferrer">Fireworks model and pricing</a> · <a href="https://dev.meta.ai/docs/muse-spark-open/settings" target="_blank" rel="noreferrer">Meta context and reasoning settings</a>.</p>
+            </article>
             </div>
             <div className="hackathon-phone-demo">
               <video autoPlay muted loop playsInline preload="auto" aria-label="Trippie Android app demo" src="/videos/trippie-android-demo-60s.mp4">

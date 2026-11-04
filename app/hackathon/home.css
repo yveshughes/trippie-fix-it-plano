@@ -256,3 +256,6 @@
 }
 
 .hackathon-bottom { grid-template-columns: 1fr; }
+
+.hackathon-story .brief-block h3 { margin: 16px 0 8px; font-size: 13px; color: #405a34; }
+.hackathon-story .brief-block .model-sources { margin-top: 14px; font-size: 10px; line-height: 1.7; }
