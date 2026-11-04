@@ -7,9 +7,14 @@ export type Observation = {
   capturedAt?: string;
   title: string;
   category: string;
-  priority: "High" | "Medium" | "Low";
-  lat: number;
-  lng: number;
+  priority: "High" | "Medium" | "Low" | "Unassessed";
+  analysisState?: "captured" | "analyzing" | "complete" | "failed";
+  analysisStage?: string;
+  practice?: boolean;
+  highlightStatus?: "verified" | "rejected" | "unavailable";
+  highlightReview?: string;
+  lat: number | null;
+  lng: number | null;
   time: string;
   image: string;
   interpretation: string;

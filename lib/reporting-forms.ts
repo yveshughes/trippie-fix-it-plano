@@ -1,4 +1,5 @@
 export const reportingForms = [
+  ["Broken or crumbling curbs", "Curb Repair", "Address; location (R); description", "Location (R) is a required free-text field identifying the affected curb. Direction of travel and photo are optional. Verified in the live city form on November 4, 2026."],
   ["Potholes and damaged pavement", "Pothole Report", "Address; description", "Direction of travel is optional. City uses temporary asphalt patches before permanent repair."],
   ["Cracked or raised sidewalk slabs", "Sidewalk Repair Request", "Address; description", "Direction of travel is optional. City considers right-of-way, missing/broken slabs, grade variance over ½ inch, or water retention over 72 hours. A photo alone does not establish those measurements."],
   ["Blocked sidewalks and curb ramps", "ADA Access Issues", "Address; description", "Identify the blocked route and nearest intersection. Route vegetation to Tree/Shrub Issue when appropriate."],

@@ -1,20 +1,29 @@
 "use client";
 import { useEffect, useId, useState } from "react";
 const chart = `flowchart TB
-  accTitle: Trippie verified photo-to-draft workflow
-  accDescr: Imported Pixel photos are interpreted by Muse Spark Open on Fireworks. Plano GIS estimates location and Muse groups views of one issue. Reviewed SAM 3.1 highlights and draft city cases are stored in Supabase and displayed in the public Next.js portal. Observations with no actionable issue are retained without creating a case. City submission is outside this workflow.
-  A["1 · CAPTURE\nPixel photo + EXIF"] --> B["2 · INTERPRET\nMuse Spark Open on Fireworks"]
-  B --> C["3 · LOCATE & GROUP\nPlano GIS + Muse multi-image reasoning"]
-  C --> D["4 · HIGHLIGHT & CHECK\nSAM 3.1 via Meta Model API"]
-  D --> E["5 · PREPARE\nDraft city case + original attachment"]
+  accTitle: Trippie mission-to-city-report architecture
+  accDescr: Android captures photos, fresh GPS and voice missions, executes validated Bluetooth actions and operates the official city form. Muse Spark Open on Fireworks interprets scenes and selects bounded navigation actions. Plano GIS estimates locations. SAM 3.1 on the Meta Model API produces highlights checked by Muse Spark Open. Supabase stores evidence and submission records. The Next.js portal shows observations, submitted reports and available city references.
+  M["MISSION\nVoice transcript or saved goal"] --> A["ANDROID / PIXEL\nCameraX + GPS + original JPEG"]
+  A --> N["NAVIGATE\nMuse Spark Open on Fireworks + action validation"]
+  N --> R["ANDROID BLE\nOne action, stop, reobserve"]
+  R --> A
+  A --> B["INTERPRET\nMuse Spark Open on Fireworks"]
+  B --> C["LOCATE & GROUP\nPlano GIS + image comparison"]
+  C --> D["HIGHLIGHT & CHECK\nSAM 3.1 / Meta API + Muse Spark Open review"]
+  D --> E["REPORT PAYLOAD\nCity form fields + original photo"]
+  E --> F["ANDROID WEBVIEW AGENT\nFill, verify, reserve and submit"]
+  F --> CITY["FIX IT PLANO\nOfficial Curb Repair form"]
+  CITY --> CONF["RECONCILE\nSave city reference when returned"]
+  F --> S["SUPABASE\nPostgres + private evidence storage"]
+  CONF --> S
   B -->|"No actionable finding"| O["Observation only"]
-  E --> S["SUPABASE\nPostgres records + image storage"]
   O --> S
-  S --> P["6 · PUBLISH & INSPECT\nNext.js portal + OpenStreetMap"]
+  E --> S
+  S --> P["PUBLIC NEXT.JS PORTAL\nOpenStreetMap + observations + case feed"]
   classDef model fill:#e5efd5,stroke:#9ab67c,color:#344d2b
   classDef local fill:#f7f9f1,stroke:#c2d0b0,color:#415837
-  class B,C,D model
-  class A,E,O,S,P local`;
+  class B,C,D,N model
+  class M,A,R,E,F,CITY,CONF,O,S,P local`;
 export default function ArchitectureDiagram() {
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [svg, setSvg] = useState(""),

@@ -1,0 +1,10 @@
+private/
+android/
+tests/
+.env*
+.git/
+.next/
+node_modules/
+preview*.png
+*.log
+*.tsbuildinfo

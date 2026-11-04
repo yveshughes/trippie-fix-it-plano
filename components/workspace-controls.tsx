@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import IntroVideo from "./intro-video";
 export default function WorkspaceControls() {
   const [mode, setMode] = useState<"live" | "demo" | null>(null);
   const [canManage, setCanManage] = useState(false);
@@ -53,9 +54,13 @@ export default function WorkspaceControls() {
     finally { setBusy(false); }
   }
   return <div className="workspace-controls">
+    <IntroVideo />
+    <IntroVideo phoneDemo />
+    {/* Live/Demo switch retained for future workspace controls.
     <div className="workspace-toggle" role="group" aria-label="Data workspace">
       {(["live", "demo"] as const).map(value => <button key={value} type="button" aria-pressed={mode === value} disabled={busy || !mode} onClick={() => change(value)}>{value.toUpperCase()}</button>)}
     </div>
+    */}
     {mode === "demo" && canManage && <button className="workspace-clear" type="button" disabled={busy} onClick={() => setConfirmClear(!confirmClear)}>Clear demo data</button>}
     {confirmClear && <div className="workspace-confirm"><p>Delete all DEMO observations, cases and photos? LIVE data stays.</p><button type="button" disabled={busy} onClick={clear}>Clear DEMO</button><button type="button" disabled={busy} onClick={() => setConfirmClear(false)}>Cancel</button></div>}
     {message && <span className="workspace-message" role="status">{message}</span>}

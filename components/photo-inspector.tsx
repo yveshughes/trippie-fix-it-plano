@@ -56,6 +56,7 @@ export default function PhotoInspector({ item, initialView, onClose }: Props) {
         </div>
         {failed && <p className="photo-inspector-error" role="alert">This photo could not be loaded. Close and reopen it to try again.</p>}
       </div>
+      {item.analysisState === "complete" && <div className="photo-analysis-note"><strong>Muse Spark Open</strong><p>{item.interpretation}</p>{item.uncertainties?.length ? <p>{item.uncertainties.join(" ")}</p> : null}</div>}
       <p id="photo-inspector-help" className="photo-inspector-help">Move over the photo or drag to magnify. Arrow keys move the lens. Press Esc to close.</p>
     </div>
   </dialog>;

@@ -20,17 +20,16 @@ export function validObservations(value: unknown): value is Observation[] {
           (k) => typeof x[k] === "string",
         ) &&
         (x.mode === undefined || ["live", "demo"].includes(x.mode)) &&
-        ["High", "Medium", "Low"].includes(x.priority) &&
+        ["High", "Medium", "Low", "Unassessed"].includes(x.priority) &&
+        (x.practice === undefined || typeof x.practice === "boolean") &&
+        (x.analysisState === undefined || ["captured", "analyzing", "complete", "failed"].includes(x.analysisState)) &&
         ["Needs review", "Ready to report", "Receipt recorded", ...publicWorkflowStatuses].includes(
           x.status,
         ) &&
         typeof x.sample === "boolean" &&
-        typeof x.lat === "number" &&
-        Number.isFinite(x.lat) &&
-        Math.abs(x.lat) <= 90 &&
-        typeof x.lng === "number" &&
-        Number.isFinite(x.lng) &&
-        Math.abs(x.lng) <= 180 &&
+        ((x.lat === null && x.lng === null && ["captured", "analyzing", "complete", "failed"].includes(x.analysisState)) ||
+          (typeof x.lat === "number" && Number.isFinite(x.lat) && Math.abs(x.lat) <= 90 &&
+          typeof x.lng === "number" && Number.isFinite(x.lng) && Math.abs(x.lng) <= 180)) &&
         (x.trippieId === undefined || typeof x.trippieId === "string") &&
         (x.capturedAt === undefined || (typeof x.capturedAt === "string" && Number.isFinite(Date.parse(x.capturedAt)))) &&
         (x.receipt === undefined || typeof x.receipt === "string") &&

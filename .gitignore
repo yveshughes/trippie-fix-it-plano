@@ -18,3 +18,4 @@ android/**/build/
 
 # Supabase CLI connection state
 supabase/.temp/
+.vercel

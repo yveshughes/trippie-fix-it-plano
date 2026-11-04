@@ -17,3 +17,24 @@ export async function assetBytes(asset){if(isCloud()){const r=await fetch(settin
 async function deleteAssetKey(key){if(isCloud()){const r=await fetch(setting('SUPABASE_URL')+'/storage/v1/object/trippie-evidence',{method:'DELETE',headers:{Authorization:'Bearer '+setting('SUPABASE_SERVICE_ROLE_KEY'),apikey:setting('SUPABASE_SERVICE_ROLE_KEY'),'Content-Type':'application/json'},body:JSON.stringify({prefixes:[key]}),signal:AbortSignal.timeout(20000)});if(!r.ok)throw new Error('Storage cleanup failed');}else await unlink(path.join(dataRoot(),'assets',key));}
 export async function clearDemo(){let assets=[];let result;if(isCloud()){result=await rest('rpc/trippie_clear_demo',{method:'POST',body:'{}'});assets=result.assets||[];delete result.assets;}else{const db=await sqlite();db.exec('BEGIN IMMEDIATE');try{assets=db.prepare("SELECT payload FROM records WHERE kind='asset' AND mode='demo'").all().map(row=>JSON.parse(row.payload));const old=db.prepare("SELECT payload FROM records WHERE kind='workspace' AND id='demo'").get();const generation=(old?JSON.parse(old.payload).generation:0)+1;const count=db.prepare("SELECT count(*) AS n FROM records WHERE mode='demo' AND kind<>'workspace'").get().n;db.prepare("DELETE FROM records WHERE mode='demo'").run();const w={id:'demo',mode:'demo',generation};db.prepare('INSERT INTO records VALUES(?,?,?,?,?,?)').run('workspace','demo','demo',generation,JSON.stringify(w),new Date().toISOString());db.exec('COMMIT');result={generation,deletedRecords:count};}catch(e){db.exec('ROLLBACK');throw e;}}
  let fileErrors=0;for(const a of assets){try{await deleteAssetKey(a.key);}catch{fileErrors++;}}return {...result,fileErrors};}
+
+// Lease ownership and publication are checked in the same database transaction.
+export async function putAnalysis(job,kind,record){
+ if(!['job','observation','case'].includes(kind))throw new Error('Invalid analysis record kind');
+ const r={...record,updatedAt:new Date().toISOString()};
+ if(r.mode!==job.mode||r.generation!==job.generation)throw new Error('Analysis workspace mismatch');
+ if(isCloud())return rest('rpc/trippie_write_analysis',{method:'POST',body:JSON.stringify({analysis_job_id:job.id,expected_token:job.leaseToken,record_kind:kind,record_payload:r})});
+ const db=await sqlite();db.exec('BEGIN IMMEDIATE');
+ try{
+  const raw=db.prepare("SELECT payload FROM records WHERE kind='job' AND id=?").get(job.id);
+  const current=raw?JSON.parse(raw.payload):null;
+  const generation=db.prepare("SELECT generation FROM records WHERE kind='workspace' AND id=?").get(job.mode)?.generation||0;
+  const retry=kind==='job'&&r.id===job.id&&r.state==='queued'&&current?.state==='failed';
+  if(!current||(!retry&&(current.state!=='running'||current.leaseUntil<=Date.now()))||current.leaseToken!==job.leaseToken||current.generation!==generation||r.generation!==generation)throw new Error('Analysis lease expired');
+  if(kind==='job'&&r.id!==job.id)throw new Error('Analysis job mismatch');
+  const old=db.prepare('SELECT mode FROM records WHERE kind=? AND id=?').get(kind,r.id);
+  if(old&&old.mode!==r.mode)throw new Error('Cannot move records between workspaces');
+  db.prepare('INSERT INTO records VALUES(?,?,?,?,?,?) ON CONFLICT(kind,id) DO UPDATE SET mode=excluded.mode,generation=excluded.generation,payload=excluded.payload,updated_at=excluded.updated_at').run(kind,r.id,r.mode,r.generation,JSON.stringify(r),r.updatedAt);
+  db.exec('COMMIT');return r;
+ }catch(error){db.exec('ROLLBACK');throw error;}
+}

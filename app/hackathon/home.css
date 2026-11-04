@@ -233,3 +233,26 @@
     font-size: 12px;
   }
 }
+
+.hackathon-intro {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 440px);
+  align-items: start;
+}
+.hackathon-story { display: grid; gap: 18px; min-width: 0; }
+.hackathon-phone-demo { min-width: 0; }
+.hackathon-phone-demo video {
+  display: block;
+  width: 100%;
+  max-height: 680px;
+  aspect-ratio: 1080 / 2424;
+  object-fit: contain;
+  margin: 0;
+  border-radius: 12px;
+  background: #101c19;
+}
+@media (max-width: 700px) {
+  .hackathon-intro { grid-template-columns: 1fr; }
+  .hackathon-phone-demo { width: 100%; max-width: 440px; justify-self: center; }
+}
+
+.hackathon-bottom { grid-template-columns: 1fr; }

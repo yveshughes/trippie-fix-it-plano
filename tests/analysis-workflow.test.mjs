@@ -1,0 +1,55 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import path from 'node:path';import sharp from 'sharp';
+const dir=await mkdtemp(path.join(tmpdir(),'trippie-analysis-'));process.env.TRIPPIE_DATA_DIR=dir;process.env.SUPABASE_URL='';process.env.SUPABASE_SERVICE_ROLE_KEY='';
+const store=await import('../server/store.mjs');const {enqueueAnalysis,runAnalysisQueue}=await import('../server/analysis.mjs');
+const image=await sharp({create:{width:32,height:32,channels:3,background:'#999'}}).jpeg().toBuffer();
+const forms=[['Sidewalk','Sidewalk Repair Request','Address; description','']];
+const assessment={decision:'no_issue',priority:'Low',title:'No maintenance issue visible',issueType:'Observation',cityForm:'',description:'',samPoint:null,samBox:null,samTarget:'',observations:['Indoor scene'],uncertainties:[],requiredMissing:[],existingCaseId:null};
+async function capture(id,mode='demo',generation=0){const asset=await store.saveAsset(image,{mode,generation,captureId:id});return store.put('observation',{id:`${mode}:ANDROID-${id}`,mode,generation,captureHash:asset.sha256,observation:{id:'ANDROID-'+id,trippieId:'pixel-10',title:'Android photo',image:'/api/media/'+asset.id,lat:33,lng:-96,analysisState:'captured'}});}
+test('analysis produces no case for no-issue, reuses completed results, and fences reset writes',async()=>{
+ try {
+  const row=await capture('one');await enqueueAnalysis(row);let calls=0;
+  const services={assess:async()=>{calls++;return {assessment,model:'test',provider:'test',responseId:'test',analyzedAt:new Date().toISOString()};},lookupLocation:async()=>null,segment:async()=>{throw Error('Must not segment no-issue');}};
+  await runAnalysisQueue('demo',forms,services);assert.equal(calls,1);
+  assert.equal((await store.get('observation',row.id)).observation.analysisState,'complete');assert.equal((await store.list('case','demo')).length,0);
+  await enqueueAnalysis(row);await runAnalysisQueue('demo',forms,services);assert.equal(calls,1,'Replaying uploads must not repeat paid analysis');
+  const next=await capture('two');await enqueueAnalysis(next);
+  await runAnalysisQueue('demo',forms,{...services,assess:async()=>{await store.clearDemo();return {assessment};}});
+  assert.equal((await store.list('observation','demo')).length,0);assert.equal((await store.list('job','demo')).length,0);
+  const generation=(await store.workspace('demo')).generation;
+  const hazard=await capture('three','demo',generation);await enqueueAnalysis(hazard);
+  await runAnalysisQueue('demo',forms,{...services,assess:async()=>({assessment:{...assessment,decision:'prepare_case',cityForm:'Sidewalk Repair Request',description:'Chipped slab edge.',samPoint:{x:.4,y:.5}},model:'test'}),lookupLocation:async()=>({label:'A & B, Plano, TX',intersection:['A','B'],distanceToIntersectionMeters:12,directionFromIntersection:'north'}),segment:async()=>({approved:false,reason:'Wrong region'})});
+  const complete=(await store.get('observation',hazard.id)).observation;
+  assert.equal(complete.highlightStatus,'rejected');assert.equal(complete.samImage,undefined);assert.equal(complete.submission.photo,hazard.observation.image);
+  assert.equal((await store.list('case','demo'))[0].finalSubmitAllowed,false);
+  const sentCase=await store.get('case',complete.caseId);
+  await store.put('case',{...sentCase,state:'Submitted',receipt:'123456',trackingUrl:'https://example.test/case/123456'});
+  const merged=await capture('four','demo',generation);await enqueueAnalysis(merged);
+  await runAnalysisQueue('demo',forms,{...services,assess:async()=>({assessment:{...assessment,decision:'prepare_case',cityForm:'Sidewalk Repair Request',description:'Chipped slab edge.',samPoint:{x:.4,y:.5},existingCaseId:complete.caseId},model:'test'}),lookupLocation:async()=>({label:'A & B, Plano, TX',intersection:['A','B'],distanceToIntersectionMeters:12,directionFromIntersection:'north'}),segment:async()=>({approved:true,highlighted:image,reason:'Matches target',sourceSha256:'normalized-source',requestId:'sam-test',reviewResponseId:'review-test'})});
+  const matched=(await store.get('observation',merged.id)).observation;
+  assert.equal(matched.caseId,complete.caseId);assert.equal(matched.caseRepresentative,false);assert.match(matched.samImage,/^\/api\/media\//);
+  assert.equal((await store.list('case','demo')).length,1,'A matching view must extend one case');
+  const retained=await store.get('case',complete.caseId);
+  assert.equal(retained.state,'Submitted','New evidence must not downgrade a submitted case');
+  assert.equal(retained.receipt,'123456');assert.equal(retained.trackingUrl,'https://example.test/case/123456');
+  assert.equal((await store.get('observation',hazard.id)).observation.caseEvidence.length,2);
+  const practice=await capture('practice','demo',generation);practice.purpose='obstacle-practice';practice.targetHint='chair';practice.observation.practice=true;await store.put('observation',practice);await enqueueAnalysis(practice);
+  const casesBefore=(await store.list('case','demo')).length;
+  await runAnalysisQueue('demo',forms,{...services,assessObstacle:async()=>({assessment:{...assessment,decision:'prepare_case',cityForm:'Sidewalk Repair Request',description:'Must never become a report',samPoint:{x:.4,y:.5}},model:'test'}),lookupLocation:async()=>{throw Error('Practice must not geolocate');},segment:async(image,a,options)=>{assert.equal(options.practice,true);return {approved:true,highlighted:image,sourceSha256:'practice',reason:'Chair matches',requestId:'sam-test',reviewResponseId:'review-test'};}});
+  const outlined=(await store.get('observation',practice.id)).observation;
+  assert.equal(outlined.practice,true);assert.match(outlined.samImage,/^\/api\/media\//);assert.equal(outlined.submission,undefined);assert.equal(outlined.decision,'follow_up');assert.equal(outlined.priority,'Unassessed');
+  assert.equal((await store.list('case','demo')).length,casesBefore,'Indoor practice must never create a city case even if model requests one');
+  const guarded=await capture('lease','demo',generation);const queued=await enqueueAnalysis(guarded);const old=await store.claimJob(queued.id);
+  await store.put('job',{...old,leaseUntil:Date.now()-1});
+  const replacement=await store.claimJob(queued.id);assert.notEqual(replacement.leaseToken,old.leaseToken);
+  await assert.rejects(store.putAnalysis(old,'observation',{...guarded,observation:{...guarded.observation,title:'Stale write'}}),/lease expired/);
+  await assert.rejects(store.putAnalysis(old,'job',{...old,state:'complete'}),/lease expired/);
+  await assert.rejects(store.putAnalysis(old,'case',{id:'stale-case',mode:'demo',generation}),/lease expired/);
+  await store.putAnalysis(replacement,'observation',{...guarded,observation:{...guarded.observation,title:'Current worker'}});
+  assert.equal((await store.get('observation',guarded.id)).observation.title,'Current worker');
+  const failure=await store.putAnalysis(replacement,'job',{...replacement,state:'failed'});
+  await store.putAnalysis(failure,'job',{...failure,state:'queued'});
+  const retryOwner=await store.claimJob(failure.id);
+  await assert.rejects(store.putAnalysis(failure,'job',{...failure,state:'queued'}),/lease expired/);
+  assert.equal((await store.get('job',failure.id)).leaseToken,retryOwner.leaseToken);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});

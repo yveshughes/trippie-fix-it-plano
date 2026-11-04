@@ -72,6 +72,7 @@ export default function PatrolMap({
       }
       layer.current.clearLayers();
       observations.forEach((o) => {
+        if (o.lat === null || o.lng === null) return;
         L.marker([o.lat, o.lng], {
           icon: L.divIcon({
             className: "case-pin",

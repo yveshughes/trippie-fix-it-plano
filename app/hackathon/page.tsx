@@ -9,40 +9,40 @@ export const metadata: Metadata = {
 };
 const steps = [
   {
-    title: "Capture the evidence",
-    tech: "Pixel 10 camera · JPEG / EXIF · local intake",
-    body: "Street-level photos supply the original evidence, capture time, and available GPS. The field trial uses 15 imported Pixel photos. Location accuracy is recorded when available; an unreported value stays unknown.",
-    output: "Original photo + capture metadata",
+    title: "Give Trippie a mission",
+    tech: "Native Android · speech recognition · CameraX · Bluetooth LE",
+    body: "Speak or select a saved mission. The Pixel shows the transcript and mission status. Muse Spark Open assesses fresh camera frames; Android validates each action, sends one bounded robot command over Bluetooth, stops and observes again. Evidence capture runs alongside this control loop.",
+    output: "Persistent mission + camera-guided actions",
   },
   {
-    title: "Interpret the scene",
-    tech: "Muse Spark Open · Fireworks",
-    body: "Muse identifies visible maintenance concerns, records observed facts and uncertainty, and suggests a city form and draft description. Photos with no actionable finding stay in the observation feed.",
-    output: "Structured observation + model request ID",
+    title: "Capture and interpret",
+    tech: "Pixel 10 · authenticated HTTPS · Muse Spark Open on Fireworks",
+    body: "Android saves the original JPEG, capture time, mission and available fresh GPS, then uploads them to the cloud. Muse Spark Open returns visible facts, uncertainty, a city request type and concise report text. Images with no actionable finding stay in the observation feed.",
+    output: "Stored photo + structured finding",
   },
   {
     title: "Locate and group the finding",
-    tech: "City of Plano GIS · Muse multi-image reasoning",
-    body: "Photo GPS is matched to nearby road geometry and connected intersections. Muse compares multiple views to group one physical issue into one case. Locations remain estimates, with intersection offsets; reused GPS alone does not establish a duplicate.",
-    output: "Estimated intersection + grouped evidence",
+    tech: "City of Plano GIS · Muse Spark Open multi-image reasoning",
+    body: "Photo GPS is matched to nearby roads and connected intersections. Muse Spark Open compares nearby candidate images before grouping views of one physical issue. The report keeps the estimated intersection, offset and uncertainty; reused GPS alone does not establish a duplicate.",
+    output: "Estimated location + grouped evidence",
   },
   {
     title: "Highlight the problem area",
-    tech: "SAM 3.1 · Meta Model API · mask review",
-    body: "SAM uses region, box, and point prompts to segment the selected surface or object. Each published highlight is checked against the source photo, request, prompt and image hash. The portal preserves the original alongside the reviewed mask.",
-    output: "Original + reviewed SAM highlight",
+    tech: "SAM 3.1 · Meta Model API · Muse Spark Open quality check",
+    body: "Muse Spark Open supplies a tight point and box around the finding. SAM segments that region, then a second Muse Spark Open pass checks that the overlay matches the defect. Android and the portal show the original photo with a SAM toggle. SAM highlights visible damage; it does not measure defect height.",
+    output: "Original photo + verified SAM highlight",
   },
   {
-    title: "Prepare the city case",
-    tech: "Audited Fix It Plano forms · draft case payload",
-    body: "The draft contains the request type, estimated location, concise description and original-photo attachment. The field trial produces two draft cases. Form preparation was checked in the browser; no city request was submitted.",
-    output: "Draft case ready for final form review",
+    title: "Submit to Fix It Plano",
+    tech: "Android WebView agent · official city form · submission reservation",
+    body: "The phone opens the official city form, selects Curb Repair, enters the GPS location and report, checks map placement and attaches the original photo. Submit sends the form through the city’s reporting flow, including its anonymous option. A durable reservation prevents automatic duplicate sends.",
+    output: "Submitted report + submission history",
   },
   {
-    title: "Publish and inspect",
-    tech: "Supabase · Next.js · React · Leaflet / OpenStreetMap",
-    body: "Supabase stores observations, case records and image assets. The public portal shows the map, original/SAM comparison, magnifier and case feed without sign-in. Protected operator commands manage capture mode and disposable DEMO data.",
-    output: "Public evidence portal + durable case records",
+    title: "Follow the case",
+    tech: "Supabase Postgres and Storage · Next.js · Leaflet / OpenStreetMap",
+    body: "The public portal refreshes observations and case posts with the report, location, original photo and SAM highlight. Submission history stays with the evidence, and a city reference is saved when returned. The original report remains traceable through its capture and submission records.",
+    output: "Live case feed + evidence and submission history",
   },
 ];
 export default function HackathonHome() {
@@ -59,28 +59,20 @@ export default function HackathonHome() {
             </p>
           </div>
           <div className="hackathon-intro">
+            <div className="hackathon-story">
             <article className="brief-block">
               <h2>What</h2>
               <p>
-                A neighborhood inspection prototype that turns street-level photos into located, highlighted evidence and draft city maintenance cases. A Pixel phone mounted on a favorite toy robot gives Trippie its point of view.
+                Trippie is an AI agent running in an Android app on a phone mounted to a rugged toy robot. It uses the camera to see its surroundings, Muse Spark Open to interpret the scene and mission, and Bluetooth commands to drive the car.
               </p>
               <ul>
-                <li>
-                  Verified field trial: 15 Pixel photos, two draft cases, and three reviewed SAM highlights.
-                </li>
-                <li>
-                  Original photos, highlighted regions, AI interpretation, and
-                  case review in one portal.
-                </li>
+                <li><strong>See, reason, drive:</strong> the Android agent uses cloud-hosted Muse Spark Open to choose its next move, sends a bounded Bluetooth command, then observes again to navigate around obstacles.</li>
+                <li><strong>Find and report:</strong> it captures hazards, highlights the issue with SAM, and fills and submits actual cases to Fix It Plano from the phone.</li>
+                <li><strong>Follow along:</strong> the web portal shows observations, photos, SAM highlights and submitted cases.</li>
               </ul>
             </article>
             <article className="brief-block">
               <h2>Why</h2>
-              <p>
-                “It was a terrible fall. I know—because it was me.” A fall in my
-                neighborhood inspired Trippie: notice the hazard before the next
-                person trips.
-              </p>
               <p>
                 A study of 2019 U.S. EMS records identified{" "}
                 <strong>
@@ -95,13 +87,26 @@ export default function HackathonHome() {
                   Study ↗
                 </a>
               </p>
+              <ul>
+                <li>Plano spends about <strong>$38 million annually</strong> on street operations, maintenance and damage claims—costs Trippie aims to reduce.</li>
+                <li>City-based projections estimate <strong>$3 million in annual savings</strong>, reaching <strong>$7 million</strong> under aggressive assumptions—over <strong>$50 million in eight years</strong>.</li>
+                <li>Early detection pays: FHWA guidance puts avoided rehabilitation costs at <strong>$6–$10 for every $1</strong> spent preserving pavement.</li>
+                <li>Plano’s sidewalk fixes cost about <strong>$55 to saw-cut a hazard</strong> versus <strong>$864 to replace a panel</strong>. Catching damage early keeps repairs smaller.</li>
+                <li>Plano found <strong>AI road surveys 90% cheaper</strong> than manual inspection. Trippie brings AI inspection to sidewalks and residents’ phones.</li>
+              </ul>
             </article>
+            </div>
+            <div className="hackathon-phone-demo">
+              <video autoPlay muted loop playsInline preload="auto" aria-label="Trippie Android app demo" src="/videos/trippie-android-demo-60s.mp4">
+                Your browser does not support video playback.
+              </video>
+            </div>
           </div>
           <div className="hackathon-process">
             <section className="brief-block process-steps">
               <h2>How it works, step by step</h2>
               <p className="brief-muted">
-                Follow the verified photo-to-draft workflow and the technology used at each step.
+                Follow the mission-to-report workflow and the technology used at each step.
               </p>
               <ol>
                 {steps.map((step, index) => (
@@ -122,37 +127,15 @@ export default function HackathonHome() {
             <section className="brief-block process-diagram">
               <h2>Architecture · Mermaid</h2>
               <p className="brief-muted">
-                Photo capture, model interpretation, checked evidence, public review.
+                Phone control, cloud reasoning, checked evidence, city reporting and public tracking.
               </p>
               <ArchitectureDiagram />
               <p className="diagram-note">
-                The diagram follows the implemented imported-photo workflow. SAM marks visible regions; the photos do not establish defect height. Draft cases are distinct from submitted city requests.
+                Android owns Bluetooth execution and the city-form browser. Cloud services analyze evidence; Supabase stores it. The current submission adapter supports LIVE Curb Repair cases. Case posts bring the original evidence and submitted description together.
               </p>
             </section>
           </div>
           <div className="hackathon-bottom">
-            <section className="brief-block">
-              <h2>What matters technically</h2>
-              <ul>
-                <li>
-                  <strong>Open-weight reasoning:</strong> Muse Spark Open is
-                  hosted on Fireworks; it runs in the cloud, not on the phone.
-                </li>
-                <li>
-                  <strong>Hardware baseline:</strong> the replacement Rugged Robot travelled five forward steps straight through its official app. That bench test is separate from the photo-analysis workflow shown here.
-                </li>
-                <li>
-                  <strong>Evidence integrity:</strong> keep original + SAM
-                  output, timestamps, location accuracy, and model request IDs
-                  with every case.
-                </li>
-                <li>
-                  <strong>Original work:</strong> new portal and inspection
-                  workflow. Existing toy hardware and earlier Pi experiments are
-                  the starting point.
-                </li>
-              </ul>
-            </section>
             <section className="brief-block">
               <h2>Judging alignment</h2>
               <ul className="rubric-list">
@@ -165,23 +148,14 @@ export default function HackathonHome() {
                   reasoning; SAM 3.1 for segmentation.
                 </li>
                 <li>
-                  <strong>Technical execution · 20%</strong> Traceable model outputs, verified image migration, durable storage and a working public evidence portal.
+                  <strong>Technical execution · 20%</strong> Traceable model outputs, verified image migration, durable storage, duplicate-send protection and a public evidence portal.
                 </li>
                 <li>
                   <strong>Demo · 25%</strong> Follow one finding from camera capture
-                  through model reasoning, SAM highlighting, and a prepared city case.
+                  through model reasoning, SAM highlighting, and phone-owned city submission.
                 </li>
               </ul>
-              <p className="brief-source">
-                Weights: participant guide reviewed Oct. 31.{" "}
-                <a
-                  href="https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Guide ↗
-                </a>
-              </p>
+
             </section>
           </div>
         </section>
