@@ -8,4 +8,4 @@ export function adminAuth(request){
  if(!setting('VERCEL')&&['127.0.0.1:3015','localhost:3015'].includes(host)&&(!origin||origin===`http://${host}`)&&(!site||['same-origin','none'].includes(site)))return true;
  try{const [user,...password]=Buffer.from((request.headers.get('authorization')||'').replace(/^Basic /,''),'base64').toString().split(':');return user==='trippie'&&equal(password.join(':'),setting('TRIPPIE_ADMIN_PASSWORD'));}catch{return false;}
 }
-export const authResponse=()=>new Response('Authentication required',{status:401,headers:{'WWW-Authenticate':'Basic realm="Trippie admin"','Cache-Control':'no-store'}});
+export const authResponse=()=>Response.json({error:'Not authorized'},{status:401,headers:{'Cache-Control':'no-store'}});

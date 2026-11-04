@@ -7,14 +7,18 @@ import path from "node:path";
 import { validObservations } from "@/lib/storage";
 import { canReadLocalEvidence } from "@/lib/local-evidence";
 export const dynamic = "force-dynamic";
+function publicObservation(row: Record<string, unknown>) {
+  const result = { ...row };
+  delete result.sourceFile;
+  return result;
+}
 export async function GET(request: Request) {
-  if (!adminAuth(request) && !deviceAuth(request)) return authResponse();
   try {
     const mode = new URL(request.url).searchParams.get("mode") || "live";
     if (!["live", "demo"].includes(mode)) return Response.json({ error: "Invalid workspace" }, { status: 400 });
     const current = await workspace(mode);
     const stored = (await list("observation", mode)).filter((row: {generation: number}) => row.generation === current.generation).map((row: {observation: Observation}) => ({ ...row.observation, mode }));
-    if (mode === "demo") return Response.json(stored, { headers: { "Cache-Control": "no-store", "X-Workspace-Generation": String(current.generation) } });
+    if (mode === "demo") return Response.json(stored.map(publicObservation), { headers: { "Cache-Control": "no-store", "X-Workspace-Generation": String(current.generation) } });
     const observations: unknown = JSON.parse(await readFile(path.join(process.cwd(), "data/patrols.json"), "utf8"));
     if (!(Array.isArray(observations) && (observations.length === 0 || validObservations(observations)))) throw new Error("Invalid observation data");
     let field: unknown = [];
@@ -23,7 +27,7 @@ export async function GET(request: Request) {
       catch(error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
       if (!(Array.isArray(field) && (field.length === 0 || validObservations(field)))) throw new Error("Invalid field data");
     }
-    return Response.json([...(observations as Record<string, unknown>[]).map(row => ({...row, mode: "live"})), ...(field as Record<string, unknown>[]).map(row => ({...row, mode: "live"})), ...stored], { headers: { "Cache-Control": "no-store" } });
+    return Response.json([...(observations as Record<string, unknown>[]).map(row => ({...row, mode: "live"})), ...(field as Record<string, unknown>[]).map(row => ({...row, mode: "live"})), ...stored].map(publicObservation), { headers: { "Cache-Control": "no-store" } });
   } catch {
     return Response.json({ error: "Observation feed unavailable" }, { status: 503 });
   }

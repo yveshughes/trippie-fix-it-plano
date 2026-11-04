@@ -1804,3 +1804,10 @@ header nav {
 .avatar-slot .trippie-avatar { margin-right:0; }
 .avatar-on-patrol .avatar-tread { animation-duration:.2s; }
 @media(max-width:780px) { .avatar-slot { width:36px; height:42px; margin-right:5px; } }
+
+.affiliation-banner { display:flex; align-items:center; justify-content:center; position:relative; gap:16px; padding:11px 52px; background:#e6edda; border-bottom:1px solid #d3dec5; color:#354c35; text-align:center; }
+.affiliation-banner p { margin:0; font-size:12px; line-height:1.5; }
+.affiliation-banner button { position:absolute; right:18px; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:30px; height:30px; border:0; border-radius:5px; color:inherit; background:transparent; cursor:pointer; }
+.affiliation-banner button:hover { background:#354c3510; }
+.affiliation-banner button:focus-visible { outline:2px solid #354c35; outline-offset:2px; }
+@media(max-width:600px) { .affiliation-banner { padding:10px 44px 10px 16px; text-align:left; } .affiliation-banner button { right:8px; } }

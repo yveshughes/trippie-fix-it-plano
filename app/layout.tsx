@@ -1,3 +1,4 @@
+import AffiliationBanner from "@/components/affiliation-banner";
 import type { Metadata } from "next";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
@@ -10,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     // The in-app browser may inject probe attributes before React hydrates.
     // Limit suppression to this root element; child mismatches still surface.
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body><AffiliationBanner />{children}</body>
     </html>
   );
 }

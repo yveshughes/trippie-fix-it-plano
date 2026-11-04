@@ -43,12 +43,12 @@ The local Pixel trial analyzed 15 JPEGs and grouped them into two draft cases. T
 | `GET /api/workspace` | Read active mode and generation |
 | `PATCH /api/workspace` | Select LIVE or DEMO |
 | `DELETE /api/workspace` | Clear DEMO only |
-| `GET /api/media/[id]` | Authenticated, hash-verified private storage image |
+| `GET /api/media/[id]` | Public, hash-verified approved image |
 | `GET /api/evidence/[id]/[asset]` | Serve verified local original/SAM evidence |
 
 New workspace records use SQLite in `private/runtime/trippie.sqlite` locally. When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the adapter uses Supabase Postgres and a private evidence bucket. Apply `supabase/migrations/202611030001_trippie.sql` to provision them. The cloud adapter is verified against the connected Supabase project, including private storage access and row-level security.
 
-The current real-photo feed also reads private JSON files; legacy browser observations use IndexedDB. Use `node scripts/migrate-to-supabase.mjs` for a dry run and add `--apply` to migrate imported observations, draft cases, original photos, reviewed SAM highlights, and SQLite workspace records. Migration retains a local SQLite/feed backup, uses insert-only records to preserve cloud edits, and verifies uploaded image hashes. Migrated evidence uses authenticated `/api/media/[id]` URLs. The legacy `/api/evidence` file adapter remains localhost-only. Cloud workspace administration uses HTTP Basic authentication with username `trippie` and `TRIPPIE_ADMIN_PASSWORD`; capture producers use `TRIPPIE_DEVICE_TOKEN` as a bearer token. Use HTTPS for deployment. Keep every credential server-side.
+The current real-photo feed also reads private JSON files; legacy browser observations use IndexedDB. Use `node scripts/migrate-to-supabase.mjs` for a dry run and add `--apply` to migrate imported observations, draft cases, original photos, reviewed SAM highlights, and SQLite workspace records. Migration retains a local SQLite/feed backup, uses insert-only records to preserve cloud edits, and verifies uploaded image hashes. Migrated evidence uses public `/api/media/[id]` URLs for approved images, with source hashes and workspace-generation checks. The portal, evidence, and documentation can be viewed without signing in. The legacy `/api/evidence` file adapter remains localhost-only. Write and reset endpoints require server credentials (`trippie` / `TRIPPIE_ADMIN_PASSWORD` using HTTP Basic headers), or `TRIPPIE_DEVICE_TOKEN` for supported capture endpoints. They do not trigger browser sign-in dialogs. Visitors can switch LIVE/DEMO views locally; only authorized operators can change capture mode or clear DEMO. Use HTTPS for deployment. Keep every credential server-side.
 
 ## Model and photo workflow
 
@@ -79,3 +79,5 @@ Android camera/GPS ingestion, a product-owned reporting agent, and autonomous Bl
 - `public/`: robot SVG and labeled sample illustration.
 
 OpenStreetMap attribution stays visible. The prototype uses the standard OSM tile service without prefetching; select a suitable tile provider for production usage under its usage policy.
+
+The dismissible banner across the app states: “This is not affiliated with the City of Plano (but we can hope).” Its dismissal lasts for the browser tab session.

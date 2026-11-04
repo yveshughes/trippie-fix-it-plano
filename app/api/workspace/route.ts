@@ -1,13 +1,12 @@
-import { adminAuth, deviceAuth, authResponse } from "@/server/auth.mjs";
+import { adminAuth, authResponse } from "@/server/auth.mjs";
 import { get, put, workspace, clearDemo } from "@/server/store.mjs";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const headers = { "Cache-Control": "no-store" };
 export async function GET(request: Request) {
-  if (!adminAuth(request) && !deviceAuth(request)) return authResponse();
   try {
     const settings = await get("settings", "capture-mode");
-    return Response.json({ mode: settings?.activeMode || "live", generation: (await workspace(settings?.activeMode || "live")).generation, demo: await workspace("demo") }, { headers });
+    return Response.json({ canManage: adminAuth(request), mode: settings?.activeMode || "live", generation: (await workspace(settings?.activeMode || "live")).generation, demo: await workspace("demo") }, { headers });
   } catch { return Response.json({ error: "Workspace unavailable" }, { status: 503, headers }); }
 }
 export async function PATCH(request: Request) {
