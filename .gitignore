@@ -15,3 +15,6 @@ private/
 android/.gradle/
 android/local.properties
 android/**/build/
+
+# Supabase CLI connection state
+supabase/.temp/

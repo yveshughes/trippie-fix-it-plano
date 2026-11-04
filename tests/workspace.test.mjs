@@ -8,10 +8,14 @@ process.env.TRIPPIE_DATA_DIR = root;
 // These are local isolation tests, independent of cloud credentials.
 process.env.SUPABASE_URL = '';
 process.env.SUPABASE_SERVICE_ROLE_KEY = '';
+const {isCloud}=await import('../server/config.mjs');
+assert.equal(isCloud(),false,'Isolation tests must never use a configured cloud database');
 const store = await import('../server/store.mjs');
 test('clearing DEMO preserves LIVE and fences late writes', async () => {
   try {
     await store.put('observation', {id:'live:one',mode:'live',generation:0,title:'Real photo'});
+    const retained=await store.put('observation',{id:'live:one',mode:'live',generation:0,title:'Do not overwrite'},{ifAbsent:true});
+    assert.equal(retained.title,'Real photo');
     await store.put('observation', {id:'demo:one',mode:'demo',generation:0,title:'Test photo'});
     const liveAsset = await store.saveAsset(Buffer.from('live image'),{mode:'live',generation:0,captureId:'real'});
     const demoAsset = await store.saveAsset(Buffer.from('test image'),{mode:'demo',generation:0,captureId:'test'});

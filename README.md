@@ -17,7 +17,7 @@ Open http://127.0.0.1:3015. The repository includes labeled sample observations.
 ```sh
 npm run typecheck
 npm run build
-node --test tests/workspace.test.mjs
+node --test tests/*.test.mjs
 node scripts/check-sam-prompt.mjs
 node scripts/check-map-location.mjs
 ```
@@ -43,11 +43,12 @@ The local Pixel trial analyzed 15 JPEGs and grouped them into two draft cases. T
 | `GET /api/workspace` | Read active mode and generation |
 | `PATCH /api/workspace` | Select LIVE or DEMO |
 | `DELETE /api/workspace` | Clear DEMO only |
+| `GET /api/media/[id]` | Authenticated, hash-verified private storage image |
 | `GET /api/evidence/[id]/[asset]` | Serve verified local original/SAM evidence |
 
-New workspace records use SQLite in `private/runtime/trippie.sqlite` locally. When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the adapter uses Supabase Postgres and a private evidence bucket. Apply `supabase/migrations/202611030001_trippie.sql` to provision them. The cloud adapter has not been tested against a provisioned project.
+New workspace records use SQLite in `private/runtime/trippie.sqlite` locally. When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the adapter uses Supabase Postgres and a private evidence bucket. Apply `supabase/migrations/202611030001_trippie.sql` to provision them. The cloud adapter is verified against the connected Supabase project, including private storage access and row-level security.
 
-The current real-photo feed also reads private JSON files; legacy browser observations use IndexedDB. Those existing files and images need migration before a deployed portal can display the local Pixel evidence. Evidence endpoints currently enforce localhost access. Cloud workspace administration uses HTTP Basic authentication with username `trippie` and `TRIPPIE_ADMIN_PASSWORD`; capture producers use `TRIPPIE_DEVICE_TOKEN` as a bearer token. Use HTTPS for deployment. Keep every credential server-side.
+The current real-photo feed also reads private JSON files; legacy browser observations use IndexedDB. Use `node scripts/migrate-to-supabase.mjs` for a dry run and add `--apply` to migrate imported observations, draft cases, original photos, reviewed SAM highlights, and SQLite workspace records. Migration retains a local SQLite/feed backup, uses insert-only records to preserve cloud edits, and verifies uploaded image hashes. Migrated evidence uses authenticated `/api/media/[id]` URLs. The legacy `/api/evidence` file adapter remains localhost-only. Cloud workspace administration uses HTTP Basic authentication with username `trippie` and `TRIPPIE_ADMIN_PASSWORD`; capture producers use `TRIPPIE_DEVICE_TOKEN` as a bearer token. Use HTTPS for deployment. Keep every credential server-side.
 
 ## Model and photo workflow
 

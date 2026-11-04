@@ -1,3 +1,4 @@
+import { isCloud } from "@/server/config.mjs";
 import type { Observation } from "@/lib/data";
 import { list, put, workspace } from "@/server/store.mjs";
 import { adminAuth, deviceAuth, authResponse } from "@/server/auth.mjs";
@@ -7,17 +8,17 @@ import { validObservations } from "@/lib/storage";
 import { canReadLocalEvidence } from "@/lib/local-evidence";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
+  if (!adminAuth(request) && !deviceAuth(request)) return authResponse();
   try {
     const mode = new URL(request.url).searchParams.get("mode") || "live";
     if (!["live", "demo"].includes(mode)) return Response.json({ error: "Invalid workspace" }, { status: 400 });
-    if (mode === "demo" && !adminAuth(request)) return authResponse();
     const current = await workspace(mode);
     const stored = (await list("observation", mode)).filter((row: {generation: number}) => row.generation === current.generation).map((row: {observation: Observation}) => ({ ...row.observation, mode }));
     if (mode === "demo") return Response.json(stored, { headers: { "Cache-Control": "no-store", "X-Workspace-Generation": String(current.generation) } });
     const observations: unknown = JSON.parse(await readFile(path.join(process.cwd(), "data/patrols.json"), "utf8"));
     if (!(Array.isArray(observations) && (observations.length === 0 || validObservations(observations)))) throw new Error("Invalid observation data");
     let field: unknown = [];
-    if (canReadLocalEvidence(request)) {
+    if (!isCloud() && canReadLocalEvidence(request)) {
       try { field = JSON.parse(await readFile(path.join(process.cwd(), "private/pixel-analysis/feed.json"), "utf8")); }
       catch(error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
       if (!(Array.isArray(field) && (field.length === 0 || validObservations(field)))) throw new Error("Invalid field data");
