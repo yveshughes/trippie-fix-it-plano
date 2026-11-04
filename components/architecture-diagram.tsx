@@ -1,20 +1,20 @@
 "use client";
 import { useEffect, useId, useState } from "react";
 const chart = `flowchart TB
-  accTitle: Trippie inspection process
-  accDescr: An Android phone controls the robot via Bluetooth and captures photos and location. A backend gateway calls Muse Spark Open on Fireworks for inspection decisions. Follow-up requests return to local command validation. Meta SAM 3.1 outlines the selected region. Evidence is reviewed in the Next.js portal before an approved reporting agent submits a city case. Muse chooses driving actions and Android validates Bluetooth movement, with obstacle checks and local stop rules.
-  A["1 · PATROL & CAPTURE\nAndroid + Rugged Robot"] -->|"Photo, location, accuracy, time"| G["API gateway\nServer-side credentials"]
-  G --> B["2 · ASSESS\nMuse Spark Open on Fireworks"]
-  B --> C{"Enough evidence?"}
-  C -->|"Drive, avoid, or inspect"| D["3 · AVOID & INVESTIGATE\nAndroid safety controller"]
-  D -->|"Bluetooth LE + camera feedback"| A
-  C -->|"Yes: region to inspect"| E["4 · OUTLINE\nSAM 3.1 via Meta Model API"]
-  E --> F["5 · REVIEW\nNext.js evidence portal"]
-  F -->|"Human-approved case"| H["6 · REPORT\nReporting agent"]
+  accTitle: Trippie verified photo-to-draft workflow
+  accDescr: Imported Pixel photos are interpreted by Muse Spark Open on Fireworks. Plano GIS estimates location and Muse groups views of one issue. Reviewed SAM 3.1 highlights and draft city cases are stored in Supabase and displayed in the public Next.js portal. Observations with no actionable issue are retained without creating a case. City submission is outside this workflow.
+  A["1 · CAPTURE\nPixel photo + EXIF"] --> B["2 · INTERPRET\nMuse Spark Open on Fireworks"]
+  B --> C["3 · LOCATE & GROUP\nPlano GIS + Muse multi-image reasoning"]
+  C --> D["4 · HIGHLIGHT & CHECK\nSAM 3.1 via Meta Model API"]
+  D --> E["5 · PREPARE\nDraft city case + original attachment"]
+  B -->|"No actionable finding"| O["Observation only"]
+  E --> S["SUPABASE\nPostgres records + image storage"]
+  O --> S
+  S --> P["6 · PUBLISH & INSPECT\nNext.js portal + OpenStreetMap"]
   classDef model fill:#e5efd5,stroke:#9ab67c,color:#344d2b
   classDef local fill:#f7f9f1,stroke:#c2d0b0,color:#415837
-  class B,E model
-  class A,D,F,G,H local`;
+  class B,C,D model
+  class A,E,O,S,P local`;
 export default function ArchitectureDiagram() {
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [svg, setSvg] = useState(""),

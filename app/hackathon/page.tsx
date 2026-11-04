@@ -9,40 +9,40 @@ export const metadata: Metadata = {
 };
 const steps = [
   {
-    title: "Patrol and capture",
-    tech: "Android camera + location · Bluetooth · Rugged Robot",
-    body: "Muse Spark Open is the driving agent: it reads the mounted phone’s camera view and chooses forward, turn, or stop actions. The Android app translates validated commands into Bluetooth Low Energy (BLE) messages for the Rugged Robot, while capturing photos, time, and location accuracy.",
-    output: "Photo + location + capture time",
+    title: "Capture the evidence",
+    tech: "Pixel 10 camera · JPEG / EXIF · local intake",
+    body: "Street-level photos supply the original evidence, capture time, and available GPS. The field trial uses 15 imported Pixel photos. Location accuracy is recorded when available; an unreported value stays unknown.",
+    output: "Original photo + capture metadata",
   },
   {
-    title: "Assess the scene",
-    tech: "Muse Spark Open · Fireworks · server-side API gateway",
-    body: "The gateway sends the image and enabled inspection targets to Muse Spark Open. The model identifies potential concerns, explains uncertainty, and decides whether another view is needed.",
-    output: "Potential finding + next inspection action",
+    title: "Interpret the scene",
+    tech: "Muse Spark Open · Fireworks",
+    body: "Muse identifies visible maintenance concerns, records observed facts and uncertainty, and suggests a city form and draft description. Photos with no actionable finding stay in the observation feed.",
+    output: "Structured observation + model request ID",
   },
   {
-    title: "Avoid obstacles and investigate",
-    tech: "Muse tool calls · Android controller · Bluetooth",
-    body: "The control loop checks for obstacles before movement. Muse chooses a clear route or requests another view; the Android controller limits each move and stops on stale images, lost connectivity, or an unsafe command. Fresh camera evidence returns to Muse before continuing. Onboard obstacle avoidance is an additional local safeguard, not a substitute for scene checks.",
-    output: "Follow-up image + reassessed finding",
+    title: "Locate and group the finding",
+    tech: "City of Plano GIS · Muse multi-image reasoning",
+    body: "Photo GPS is matched to nearby road geometry and connected intersections. Muse compares multiple views to group one physical issue into one case. Locations remain estimates, with intersection offsets; reused GPS alone does not establish a duplicate.",
+    output: "Estimated intersection + grouped evidence",
   },
   {
-    title: "Outline the evidence",
-    tech: "SAM 3.1 · Meta Model API",
-    body: "SAM receives an image and region prompt to outline the suspected defect. Preserve the original beside the mask so a reviewer can inspect what the model highlighted.",
-    output: "Original image + segmentation outline",
+    title: "Highlight the problem area",
+    tech: "SAM 3.1 · Meta Model API · mask review",
+    body: "SAM uses region, box, and point prompts to segment the selected surface or object. Each published highlight is checked against the source photo, request, prompt and image hash. The portal preserves the original alongside the reviewed mask.",
+    output: "Original + reviewed SAM highlight",
   },
   {
-    title: "Review and prepare a case",
-    tech: "Next.js 16 · React 19 · TypeScript · Leaflet / OpenStreetMap",
-    body: "The portal presents the location, photos, interpretation, and suggested priority. An administrator reviews the observation queue and scrolls through case photos, SAM highlights, and case submission text.",
-    output: "Human-reviewed evidence package",
+    title: "Prepare the city case",
+    tech: "Audited Fix It Plano forms · draft case payload",
+    body: "The draft contains the request type, estimated location, concise description and original-photo attachment. The field trial produces two draft cases. Form preparation was checked in the browser; no city request was submitted.",
+    output: "Draft case ready for final form review",
   },
   {
-    title: "Report and follow up",
-    tech: "Reporting agent · Fix It Plano forms",
-    body: "The reporting agent selects the correct city form, fills supported fields from reviewed evidence, and requests approval before sending. Confirmed city references and the exact submitted text return to the case feed.",
-    output: "Case reference + follow-up record",
+    title: "Publish and inspect",
+    tech: "Supabase · Next.js · React · Leaflet / OpenStreetMap",
+    body: "Supabase stores observations, case records and image assets. The public portal shows the map, original/SAM comparison, magnifier and case feed without sign-in. Protected operator commands manage capture mode and disposable DEMO data.",
+    output: "Public evidence portal + durable case records",
   },
 ];
 export default function HackathonHome() {
@@ -62,14 +62,11 @@ export default function HackathonHome() {
             <article className="brief-block">
               <h2>What</h2>
               <p>
-                A rugged toy robot with an Android phone, designed to find
-                potential sidewalk hazards and prepare evidence for city
-                maintenance reports.
+                A neighborhood inspection prototype that turns street-level photos into located, highlighted evidence and draft city maintenance cases. A Pixel phone mounted on a favorite toy robot gives Trippie its point of view.
               </p>
               <ul>
                 <li>
-                  Configurable targets: uneven pavement, obstructions, debris,
-                  and other maintenance concerns.
+                  Verified field trial: 15 Pixel photos, two draft cases, and three reviewed SAM highlights.
                 </li>
                 <li>
                   Original photos, highlighted regions, AI interpretation, and
@@ -104,7 +101,7 @@ export default function HackathonHome() {
             <section className="brief-block process-steps">
               <h2>How it works, step by step</h2>
               <p className="brief-muted">
-                From camera capture to a city case: what happens and which technology does it.
+                Follow the verified photo-to-draft workflow and the technology used at each step.
               </p>
               <ol>
                 {steps.map((step, index) => (
@@ -125,14 +122,11 @@ export default function HackathonHome() {
             <section className="brief-block process-diagram">
               <h2>Architecture · Mermaid</h2>
               <p className="brief-muted">
-                Cloud reasoning, local control, human review.
+                Photo capture, model interpretation, checked evidence, public review.
               </p>
               <ArchitectureDiagram />
               <p className="diagram-note">
-                Muse Spark Open chooses driving and inspection actions; Android executes them over Bluetooth with local movement limits. Obstacle avoidance is part of the control loop. SAM outlines
-                a region; it does not determine severity. The phone’s
-                calibrated, stationary tilt reading could support slope
-                observations, not measure crack height.
+                The diagram follows the implemented imported-photo workflow. SAM marks visible regions; the photos do not establish defect height. Draft cases are distinct from submitted city requests.
               </p>
             </section>
           </div>
@@ -145,7 +139,7 @@ export default function HackathonHome() {
                   hosted on Fireworks; it runs in the cloud, not on the phone.
                 </li>
                 <li>
-                  <strong>Model-driven robot control:</strong> Muse Spark Open → validated movement tool → Android → Bluetooth LE → robot. Camera feedback closes the obstacle-avoidance loop; local stop rules remain on the phone.
+                  <strong>Hardware baseline:</strong> the replacement Rugged Robot travelled five forward steps straight through its official app. That bench test is separate from the photo-analysis workflow shown here.
                 </li>
                 <li>
                   <strong>Evidence integrity:</strong> keep original + SAM
@@ -171,12 +165,11 @@ export default function HackathonHome() {
                   reasoning; SAM 3.1 for segmentation.
                 </li>
                 <li>
-                  <strong>Technical execution · 20%</strong> Robot + phone +
-                  inspection loop + evidence portal.
+                  <strong>Technical execution · 20%</strong> Traceable model outputs, verified image migration, durable storage and a working public evidence portal.
                 </li>
                 <li>
                   <strong>Demo · 25%</strong> Follow one finding from camera capture
-                  through model reasoning, SAM highlighting, and city reporting.
+                  through model reasoning, SAM highlighting, and a prepared city case.
                 </li>
               </ul>
               <p className="brief-source">

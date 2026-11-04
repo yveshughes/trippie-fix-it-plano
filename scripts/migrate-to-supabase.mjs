@@ -1,4 +1,5 @@
 // Additive, resumable migration. Originals and local SQLite are retained.
+import { verifyImportedEvidence } from './lib/migration-verification.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -36,7 +37,7 @@ async function upload(bytes,info) {
  if(createHash('sha256').update(remote).digest('hex')!==sha256)throw new Error('Uploaded evidence hash mismatch');
  return asset;
 }
-const urls=new Map();
+const urls=new Map();const sourceHashes=new Map();
 for(const observation of feed) {
  for(const [kind,url] of [['original',observation.image],['sam',observation.samImage]]) {
   if(!url||urls.has(url))continue;
@@ -51,7 +52,7 @@ for(const observation of feed) {
    if(review.status!=='approved'||review.requestId!==revision||segmentation.requestId!==revision||review.imageSha256!==createHash('sha256').update(bytes).digest('hex'))throw new Error('SAM review does not match evidence');
   }
   const asset=await upload(bytes,{mode:'live',generation:0,captureId:match[1],name:kind+'.jpg',mime:'image/jpeg',approved:true});
-  urls.set(url,'/api/media/'+asset.id);
+  urls.set(url,'/api/media/'+asset.id);sourceHashes.set(url,asset.sha256);
  }
 }
 // Existing SQLite assets are uncommon, but copy and remap them too.
@@ -79,9 +80,7 @@ for(const observation of feed) {
  await insert('observation',{id:'live:'+observation.id,mode:'live',generation:0,observation:migrated});
 }
 for(const observation of feed.filter(r=>r.caseRepresentative&&r.submission))await insert('case',{id:'live:'+observation.caseId,mode:'live',generation:0,caseId:observation.caseId,observationId:observation.id,submission:remap(observation.submission),state:'draft',finalSubmitAllowed:false});
-for(const observation of feed) {
- const record=await get('observation','live:'+observation.id);
- if(!record?.observation?.image?.startsWith('/api/media/'))throw new Error('Observation migration incomplete');
-}
-await writeFile(path.join(backupDir,'manifest.json'),JSON.stringify({...manifest,verifiedAssets:urls.size,completedAt:new Date().toISOString()},null,2));
-console.log(JSON.stringify({status:'verified',...manifest,verifiedAssets:urls.size,localBackup:backupDir}));
+const cloudAssets=new Map((await list('asset','live')).map(asset=>[asset.id,asset]));
+const verified=await verifyImportedEvidence(feed,{assets:cloudAssets,sourceHashes,loadRecord:get,readBytes:assetBytes});
+await writeFile(path.join(backupDir,'manifest.json'),JSON.stringify({...manifest,verifiedAssets:verified.verifiedImages,completedAt:new Date().toISOString()},null,2));
+console.log(JSON.stringify({status:'verified',...manifest,verifiedAssets:verified.verifiedImages,localBackup:backupDir}));
