@@ -84,14 +84,14 @@ export default function HackathonHome() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Study ↗
+                  EMS study ↗
                 </a>
               </p>
               <ul>
                 <li>Plano spends about <strong>$38 million annually</strong> on street operations, maintenance and damage claims—costs Trippie aims to reduce.</li>
                 <li>City-based projections estimate <strong>$3 million in annual savings</strong>, reaching <strong>$7 million</strong> under aggressive assumptions—over <strong>$50 million in eight years</strong>.</li>
                 <li>Early detection pays: FHWA guidance puts avoided rehabilitation costs at <strong>$6–$10 for every $1</strong> spent preserving pavement.</li>
-                <li>Plano’s sidewalk fixes cost about <strong>$55 to saw-cut a hazard</strong> versus <strong>$864 to replace a panel</strong>. Catching damage early keeps repairs smaller.</li>
+                <li>Plano’s sidewalk pilot averaged <strong>$55 per saw-cut repair</strong>, compared with an estimated <strong>$864 for removal and replacement</strong>. Catching damage early keeps repairs smaller. <a href="https://plano.novusagenda.com/agendapublic/CoverSheet.aspx?ItemID=9934&amp;MeetingID=3588" target="_blank" rel="noreferrer">City of Plano, TX ↗</a></li>
                 <li>Plano found <strong>AI road surveys 90% cheaper</strong> than manual inspection. Trippie brings AI inspection to sidewalks and residents’ phones.</li>
               </ul>
             </article>
